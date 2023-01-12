@@ -1,0 +1,35 @@
+This is a guide to the known bugs and expected things that a candidate would test
+
+Check the obvious things mentioned in the features
+* Does an order get created with Status = SC
+* Does using an existing MRN link that existing patient to the new order
+* If an order gets deleted, ensure the patient doesn't get deleted
+* Do all orders get displayed in the worklist
+
+Slightly harder things
+* StudyDateTime cant be future but the UI has no validation 
+* Modality is required but UI has no validation
+* The APIs and DBs don't check if Modality, Client, or Site values submited to the APIs are a valid from the current lists. 
+* If a new Order attaches to an existing Patient, the Patient CreatedAt and UpdatedAt are set to the current time when neither property should 
+  be changed, and if a different name is entered then it doesn’t update the existing patient to the new name which is ambiguous behaviour. 
+* A new Order doesn’t have its CreatedAt and UpdatedAt fields set to a value
+* StudyDateTime in the UI doesn’t allow the seconds to be set in a new order, but the seconds are set for the initial orders.
+* There are no checks for special characters in the free text fields. This isn’t documented but it should be tested for and likely questioned. 
+
+
+Much harder things
+* MRN length is documented as 12, the usual string length. The UI allows up to 16, the Order API allows 15 but Patient API is 12. DB is 12 but 
+  doesn’t have any validation on it. Catching the UI/API discrepancy is expected as they should check the documented 12 and get an error no 
+  matter what. If they are only using the UI though, they won't notice the discrepancies between the 2 APIs. Catching the DB discrepancy would 
+  only happen if they look through the code. 
+* AccessionNumber length is documented as 12, the usual string length. The UI enforces 12, but if the user enters 13 chars then the validation 
+  wrongly says that the length is 64. The Order API and DB are 16. If they submit 12 chars then they won’t realise that the API will accept up 
+  to 16, unless they go looking at the code in detail. The fact that the UI length and validation don’t match is a hint that something is wrong 
+  though. 
+* Org Code and Modality have max length of 5 in the API, but the documentation says 12, the usual string length. If they are only testing the UI 
+  then they will never hit the error as the UI uses lists populated from the backend, which only have 2-3 char values. 
+  
+Stretch Question
+* This application doesn’t have a need for an API to retrieve all patients. However, if you needed a list of all patients to perform some other 
+  testing, what are some potential solutions for accessing this dataset, and what are the pros and cons of each solution?
+Looking for a suggestion of building APIs for testing purposes, to do data creation, teardown, querying, etc, that would never be deployed to prod. 
