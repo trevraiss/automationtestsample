@@ -1,6 +1,10 @@
 # Automation Test Sample Application
 This is a sample application for running automation tests.
 
+## Requirements for this project
+
+Run the application and launch the homepage, which documents the context and the requirements. 
+
 ## Prerequisites
 
 You will need the following tools installed to build and run this project:
